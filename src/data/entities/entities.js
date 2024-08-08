@@ -1,6 +1,6 @@
 /* Stateless Attributes of Entities */
 
-const entities = [
+const Entities = [
     {
         id:     'f-16-v',                 
         name:   'F16V',                  /*Entity Name                                            */
@@ -15,16 +15,14 @@ const entities = [
         sidc:   '30060100001101051702',
         label:  'F35/A'
     },
-]
+];
 
-
-const entitiesTree = [
+const EntitiesTree = [
     {
         id: 'fixed-wing',
         label: 'Fixed Wing',
-        children: entities.filter((entity) => entity.kind === 'Fixed-Wing')
+        children: Entities.filter((entity) => entity.kind === 'Fixed-Wing')
     }
-]
+];
 
-
-export { entities, entitiesTree };
+export { Entities as entities, EntitiesTree as entitiesTree };

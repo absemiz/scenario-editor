@@ -1,4 +1,4 @@
-const locations = {
+const Locations = {
     'ankara': {
         latitude: 39.925533,
         longitude: 32.866287        
@@ -13,4 +13,4 @@ const locations = {
     }
 };
 
-export default locations
+export default Locations

@@ -2,10 +2,10 @@ import SymbolFactory from "./utility/symbology/factory";
 import { Marker } from "react-leaflet";
 
 function EntityView({ properties }) {
-    const { entity, position } = properties;
+    const { entity } = properties;
     return (
-        <Marker 
-        position={position}
+        <Marker
+        position={entity.position}
         icon={SymbolFactory.createIcon(entity.sidc)}>
         </Marker>
     )
