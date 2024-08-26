@@ -1,31 +1,34 @@
 import { LocationOn, KeyboardTab } from "@mui/icons-material"
+import { Icon } from "leaflet";
+import MarkerIconsURLs from "../../assets/marker-icons/marker-icons";
 
 const Markers = [
     {
         id: 'waypoint',
         label: 'Waypoint',
+        name: 'Waypoint',
         kind: 'control-measures',
-        icon: LocationOn
     },
     {
         id: 'trigger',
         label: 'Trigger',
+        name: 'Trigger',
         kind: 'event',
-        icon: KeyboardTab
     }
 ];
 
 const MarkersTree = [
     {
-        id: 'control-measures',
+        id: 'root-control-measures',
         label: 'Control Measures',
         children: Markers.filter((marker) => marker.kind === 'control-measures')
     },
     {
-        id: 'event',
+        id: 'root-event',
         label: 'Event',
         children: Markers.filter((marker) => marker.kind === 'event')
     }
 ];
+
 
 export { Markers, MarkersTree };

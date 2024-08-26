@@ -1,19 +1,26 @@
 import '../node_modules/leaflet/dist/leaflet.css'
-import { MapContainer, TileLayer} from 'react-leaflet';
-import EntityView from './EntityView';
+import { MapContainer, TileLayer } from 'react-leaflet';
+
+import ItemView from './ItemView';
 import ApplicationState from './utility/state/state';
 import Locations from './data/locations/locations';
+import InspectorView from './InspectorView';
+import SceneHierarchyView from './SceneHierarchyView';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useContext } from 'react';
+
+import { ItemsOnMapContext } from './ItemsOnMapContext';
 
 function Map({ properties }) {
 
-    const { state, entitiesOnMap, setEntitiesOnMap} = properties;
-    const initialZoom = 8;
+    const { applicationState, setApplicationState, setEntitiesOnMap} = properties;
+    const initialZoom = 6;
+
+    const {itemsOnMap, addItemToMap, removeItemFromMap} = useContext(ItemsOnMapContext);
 
     useEffect(
         () => {
-            if (state === ApplicationState.RUN) {
+            if (applicationState === ApplicationState.RUN) {
                 const interval = setInterval(() => {
                     setEntitiesOnMap((currentEntities) => {
                         return currentEntities.map(
@@ -29,12 +36,12 @@ function Map({ properties }) {
                 return () => clearInterval(interval);
             }
         },
-        [state]
+        [applicationState]
     );
 
     return (
     <MapContainer 
-    center={[(Locations.izmir.latitude + Locations.athens.latitude) / 2, (Locations.izmir.longitude + Locations.athens.longitude) / 2]} 
+    center={Object.values(Locations.ankara)} 
     zoom={initialZoom}
     zoomControl={false}
     doubleClickZoom={false}
@@ -44,7 +51,10 @@ function Map({ properties }) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
-        {entitiesOnMap.map((entityOnMap) => <EntityView properties={{entity: entityOnMap}}/>)}
+        {
+        itemsOnMap.map((item) => (<ItemView properties={{ item: item, position: item.position }} key={item.key} />))}
+        <InspectorView properties={{ applicationState: applicationState, setApplicationState: setApplicationState }}/>
+        <SceneHierarchyView />
     </MapContainer>
   );
 }

@@ -1,9 +1,13 @@
 import ApplicationState from './utility/state/state';
 import { Fab } from '@mui/material';
 import { PlayArrow, Pause } from '@mui/icons-material';
+import { ApplicationContext } from './ApplicationContext';
+
+import React from 'react';
+import { useContext } from 'react';
 
 function StateButton({ properties }) {
-    const { applicationState, setApplicationState } = properties;
+    const { getApplicationState, setApplicationState } = useContext(ApplicationContext);
     return (
         <Fab 
         style={
@@ -18,15 +22,15 @@ function StateButton({ properties }) {
         }
         onClick={(e) => {
             setApplicationState(
-              applicationState === ApplicationState.INITIALIZATION ? 
+              getApplicationState() === ApplicationState.INITIALIZATION ? 
               ApplicationState.RUN : ApplicationState.INITIALIZATION
             );
             e.stopPropagation();
           }}
           >
             {
-                applicationState === ApplicationState.INITIALIZATION ? 
-                <PlayArrow /> : <Pause />
+                getApplicationState() === ApplicationState.RUN ? 
+                <Pause /> : <PlayArrow />
             }
         </Fab>
     )
