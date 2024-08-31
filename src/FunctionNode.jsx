@@ -64,14 +64,22 @@ function FunctionNode({ data }) {
     <div style={styles.node}>
       <div style={styles.topContainer}>
         <SvgIcon style={styles.topIcon} component={Functions} />
-        <Typography style={styles.topLabel}>{`ƒ ${data.name}`}</Typography>
-        {data.onFlow && (
-          <Handle
-            id={`functionFlowOutput`}
-            type="source"
-            position={Position.Right}
-            style={styles.handle}
-          />
+        <Typography style={styles.topLabel}>{`${data.name}`}</Typography>
+        {data.flowDependent && (
+          <>
+            <Handle
+              id={`functionFlowOutput${data.id}`}
+              type="source"
+              position={Position.Right}
+              style={styles.handle}
+            />
+            <Handle
+              id={`functionFlowInput${data.id}`}
+              type="target"
+              position={Position.Left}
+              style={styles.handle}
+            />
+          </>
         )}
       </div>
       <div>

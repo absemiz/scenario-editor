@@ -1,14 +1,14 @@
 import React from 'react';
 import { Handle, Position } from "@xyflow/react";
 import { Typography, SvgIcon } from "@mui/material";
-import { Flag } from "@mui/icons-material";
+import { Timeline, Shuffle } from "@mui/icons-material";
 
 const styles = {
   node: {
     display: 'flex',
     flexDirection: 'column',
     width: '200px',
-    border: '2px solid #1DB954',
+    border: '2px solid #EE82EE',
     borderRadius: '5px',
     backgroundColor: '#2e2e2e',
     color: 'white',
@@ -20,7 +20,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    backgroundColor: '#1DB954',
+    backgroundColor: '#EE82EE',
     color: 'white',
     position: 'relative',
     top: 0,
@@ -59,15 +59,15 @@ const styles = {
   },
 };
 
-function MarkerNode({ data }) {
+function ControlFlowNode({ data }) {
   return (
     <div style={styles.node}>
       <div style={styles.topContainer}>
-        <SvgIcon style={styles.topIcon} component={Flag} />
+        <SvgIcon style={styles.topIcon} component={Shuffle} />
         <Typography style={styles.topLabel}>{`${data.name}`}</Typography>
         {data.onFlow && (
           <Handle
-            id={`functionFlowOutput`}
+            id={`functionFlowOutput${data.id}`}
             type="source"
             position={Position.Right}
             style={styles.handle}
@@ -75,6 +75,19 @@ function MarkerNode({ data }) {
         )}
       </div>
       <div>
+        {data.inputs && data.inputs.map((inputName, index) => (
+          <div key={`input${index}`} style={styles.inputOutputContainer}>
+            <Handle 
+              id={`input${index}`}
+              type="target"
+              position={Position.Left}
+            />
+            <Typography style={styles.inputText}>
+              {inputName}
+            </Typography>
+          </div>
+        ))}
+
         {data.outputs && data.outputs.map((outputName, index) => (
           <div key={`output${index}`} style={styles.inputOutputContainer}>
             <Typography style={styles.outputText}>
@@ -92,4 +105,4 @@ function MarkerNode({ data }) {
   );
 }
 
-export default MarkerNode;
+export default ControlFlowNode;

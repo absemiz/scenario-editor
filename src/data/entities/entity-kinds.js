@@ -28,6 +28,12 @@ const EntityKinds = Object.freeze(
                     flowDependent: false,
                     inputs: ['Target'],
                     outputs: ['X', 'Y', 'Z']
+                },
+                taskTurn: {
+                    name: 'taskTurn',
+                    flowDependent: true,
+                    inputs: ['Target', 'toHeading'],
+                    outputs: ['ƒ onCompleted']
                 }
             }
         }

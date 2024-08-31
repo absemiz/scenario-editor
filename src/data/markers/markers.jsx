@@ -1,7 +1,3 @@
-import { LocationOn, KeyboardTab } from "@mui/icons-material"
-import { Icon } from "leaflet";
-import MarkerIconsURLs from "../../assets/marker-icons/marker-icons";
-
 const Markers = [
     {
         id: 'waypoint',

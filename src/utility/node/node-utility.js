@@ -7,6 +7,7 @@ const NodeTypes = Object.freeze({
     FunctionNode:    'functionNode',
     VariableNode:    'variableNode',
     ControlFlowNode: 'controlFlowNode',
+    UtilityNode:     'utilityNode',
 });
 
 function createEntityNode(id, entity, position) 
@@ -19,28 +20,61 @@ function createEntityNode(id, entity, position)
             kind: entity.kind,
             topLabel: entity.callsign, 
             handleLabel: 'Self',
-            relatedFunctions: [
-                'getPosition',
-                'getAltitude',
-                'getVelocity',
-                'getHeading',
-            ] 
+            relatedFunctions: Object.values(EntityKinds[entity.kind].methods)
         }
     };
 }
 
-function createFunctionNode(id, name, position, flowDependent, inputs, outputs) {
-    return {
-        id: id,
-        type: NodeTypes.FunctionNode,
-        position: position,
-        data: {
-            name: name,
-            flowDependent: flowDependent,
-            inputs: inputs,
-            outputs: outputs
-        }
-    }
+function createFunctionNode() {
+    let key = -1;
+    return function (id, name, position, flowDependent, inputs, outputs) {
+        ++key;
+        return {
+            id: `${id}-${key}`,
+            type: NodeTypes.FunctionNode,
+            position: position,
+            data: {
+                name: name,
+                flowDependent: flowDependent,
+                inputs: inputs,
+                outputs: outputs
+            }
+        };
+    };
 }
 
-export { NodeTypes, createEntityNode, createFunctionNode };
+function createControlFlowNode() {
+    let key = -1;
+    return function (id, name, position, flowDependent, inputs, outputs) {
+        ++key;
+        return {
+            id: `${id}-${key}`,
+            type: NodeTypes.ControlFlowNode,
+            position: position,
+            data: {
+                name: name,
+                flowDependent: flowDependent,
+                inputs: inputs,
+                outputs: outputs
+            }
+        };
+    };
+}
+
+function createMarkerNode(id, name, position, outputs) {
+    let key = -1;
+    return () => {
+        ++key;
+        return {
+            id: `${id}-${key}`,
+            type: NodeTypes.MarkerNode,
+            position: position,
+            data: {
+                name: name,
+                outputs: outputs,
+            }
+        };
+    };
+}
+
+export { NodeTypes, createEntityNode, createFunctionNode, createMarkerNode, createControlFlowNode };

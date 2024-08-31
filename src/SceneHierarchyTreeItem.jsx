@@ -5,7 +5,10 @@ import { ItemsOnMapContext } from "./ItemsOnMapContext";
 import { ApplicationContext } from "./ApplicationContext";
 import ApplicationState from "./utility/state/state";
 
-import { createEntityNode } from "./utility/node/node-utility";
+import { createEntityNode, createMarkerNode } from "./utility/node/node-utility";
+
+import { isMarker } from "./utility/tree-item/query";
+import MarkerKinds from "./data/markers/marker-kinds";
 
 function SceneHierarchyTreeItem({ itemId, label, children, screenToFlowPosition, addNodes} ) {
     const { getApplicationState, } = React.useContext(ApplicationContext);
@@ -39,15 +42,28 @@ function SceneHierarchyTreeItem({ itemId, label, children, screenToFlowPosition,
                         y: event.clientY
                     }
                 );
-                const entity = itemsOnMap.at(itemId);
-                if (entity)
+                const item = itemsOnMap.at(itemId);
+                if (item)
                 {
-                    const node = createEntityNode(
-                        String(itemId),
-                        entity,
-                        flowPosition,
-                        entity.callsign
-                    );
+                    let node;
+                    if (isMarker(item))
+                    {
+                        node = createMarkerNode(
+                            String(itemId),
+                            item.callsign,
+                            flowPosition,
+                            MarkerKinds[item.kind][item.id].outputs
+                        )();
+                    }
+                    else
+                    {
+                        node = createEntityNode(
+                            String(itemId),
+                            item,
+                            flowPosition,
+                            item.callsign
+                        );
+                    }
                     addNodes([node]);
                 }
                 else

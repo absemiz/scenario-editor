@@ -20,9 +20,12 @@ import EventNode from "./EventNode";
 import EntityNode from "./EntityNode";
 import FunctionNode from "./FunctionNode";
 
-import { createFunctionNode } from "./utility/node/node-utility";
+import { createFunctionNode, createControlFlowNode } from "./utility/node/node-utility";
 
-import { EntityKinds } from "./data/entities/entity-kinds";
+import MarkerNode from "./MarkerNode";
+import UtilityFunctions from "./data/utility-functions/utility-functions";
+import ControlFlowNode from "./ControlFlowNode";
+import ControlFlows from "./data/control-flows/control-flows";
 
 const styles = {
     reactFlow: {
@@ -33,8 +36,13 @@ const styles = {
 const nodeTypes = { 
     'eventNode': EventNode, 
     'entityNode': EntityNode,
-    'functionNode': FunctionNode
+    'functionNode': FunctionNode,
+    'markerNode': MarkerNode,
+    'controlFlowNode': ControlFlowNode
 };
+
+const functionNodeCreator = createFunctionNode();
+const controlFlowNodeCreator = createControlFlowNode();
 
 const initialNodes = [
     { 
@@ -76,7 +84,6 @@ function BehaviourEditor() {
     const [relatedFunctionsListOpen, setRelatedFunctionListOpen] = React.useState(false);
     const [relatedFunctionListPosition, setRelatedFunctionListPosition] = React.useState(null);
     const [relatedFunctionList, setRelatedFunctionList] = React.useState([]);
-
     const RelatedFunctions = () => {
         return (
             <List
@@ -93,7 +100,7 @@ function BehaviourEditor() {
                 zIndex: 1000
             }}
         >
-            {relatedFunctionList.map((functionName, index) => (
+            {relatedFunctionList.map((functionObject, index) => (
                 <ListItem
                     key={index}
                     sx={{
@@ -105,27 +112,92 @@ function BehaviourEditor() {
                     }}
                     onClick={
                         (event) => {
-                            const functionData = EntityKinds.FixedWing.methods[functionName];
-                            const functionNode = createFunctionNode(
-                                `${functionName}${index}`,
-                                functionName,
+                            const functionNode = functionNodeCreator(
+                                `${functionObject.name}${index}`,
+                                functionObject.name,
                                 screenToFlowPosition({ x: event.clientX, y: event.clientY }),
-                                functionData.flowDependent,
-                                functionData.inputs,
-                                functionData.outputs
+                                functionObject.flowDependent,
+                                functionObject.inputs,
+                                functionObject.outputs
                             );
                             setRelatedFunctionListOpen(false);
                             addNodes([functionNode])
                         }
                     }
                 >
-                    <ListItemText primary={`ƒ ${functionName}`} />
+                    <ListItemText primary={`ƒ ${functionObject.name}`} />
                 </ListItem>
             ))}
 
         </List>
         );
     };
+
+    const [utilityFunctionsListOpen, setUtilityFunctionsListOpen] = React.useState(false);
+    const [utilityFuntionsListPosition, setUtilityFunctionsListPosition] = React.useState(null);
+    const UtilityFunctionsList = () => {
+        return (
+            <List
+            sx={{
+                position: 'absolute',
+                top: utilityFuntionsListPosition.y,
+                left: utilityFuntionsListPosition.x,
+                bgcolor: '#2c2c2c',  
+                color: '#ffffff',
+                borderRadius: '4px',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)',
+                padding: '8px 0',
+                minWidth: '150px',
+                zIndex: 1000
+            }}
+        >
+            {[...Object.values(UtilityFunctions), ...Object.values(ControlFlows)].map((functionObject, index) => (
+                <ListItem
+                    key={index}
+                    sx={{
+                        padding: '8px 16px',
+                        cursor: 'pointer',
+                        '&:hover': {
+                            bgcolor: '#3c3c3c',
+                        }
+                    }}
+                    onClick={
+                        (event) => {
+                            let node;
+                            if (functionObject.id.startsWith('util'))
+                            {
+                                node = functionNodeCreator(
+                                    `${functionObject.name}${index}`,
+                                    functionObject.name,
+                                    screenToFlowPosition({ x: event.clientX, y: event.clientY }),
+                                    functionObject.flowDependent,
+                                    functionObject.inputs,
+                                    functionObject.outputs
+                                );
+                            }
+                            else
+                            {
+                                node = controlFlowNodeCreator(
+                                    `${functionObject.name}${index}`,
+                                    functionObject.name,
+                                    screenToFlowPosition({ x: event.clientX, y: event.clientY }),
+                                    functionObject.flowDependent,
+                                    functionObject.inputs,
+                                    functionObject.outputs
+                                );
+                            }
+                            setUtilityFunctionsListOpen(false);
+                            addNodes([node])
+                        }
+                    }
+                >
+                    <ListItemText primary={`${functionObject.name}`} />
+                </ListItem>
+            ))}
+
+        </List>
+        );
+    }
 
     return (
     <Dialog 
@@ -156,9 +228,17 @@ function BehaviourEditor() {
                     setRelatedFunctionListOpen(true); 
                 }
             }}
+            onContextMenu={
+                (event) => { 
+                    event.preventDefault();
+                    setUtilityFunctionsListPosition({ x: event.clientX, y: event.clientY })
+                    setUtilityFunctionsListOpen(true);
+                }
+            }
             style={styles.reactFlow}
             >
                 { relatedFunctionsListOpen && <RelatedFunctions /> }
+                { utilityFunctionsListOpen && <UtilityFunctionsList /> }
                 <Background variant="dots" gap={12} />
                 <SceneHierarchyView 
                 screenToFlowPosition={screenToFlowPosition} 
